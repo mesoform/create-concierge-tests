@@ -1,0 +1,8 @@
+---
+
+- name: "| Tidy up files
+			docker-compose.yml"
+		file:	path={{ docker_src }}/docker-compose.yml state=absent
+
+
+...

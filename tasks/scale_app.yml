@@ -1,0 +1,15 @@
+---
+- name: Scale {{ project_name }} service to {{ num_servers }} servers
+  docker_service:
+    tls_hostname: "{{ docker_host }}"
+    tls: yes
+    project_name: "{{ project_name }}"
+    project_src: "{{ docker_src }}"
+    scale:
+      server: "{{ num_servers }}"
+  register: num_servers
+  tags:
+    - scale
+
+- debug:
+    var: num_servers

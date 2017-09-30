@@ -1,0 +1,16 @@
+---
+- name: tearing down and removing {{ project_src }} for {{ app_name }}
+  docker_service:
+    tls_hostname: "{{ docker_host }}"
+    definition:
+      app:
+        container_name: "{{ app_name }}"
+
+      db:
+        container_name: ""{{ app_name }}_db"
+        labels:
+          com.joyent.package: "{{ db_resources }}"
+    state: absent
+    timeout: 120
+
+...
