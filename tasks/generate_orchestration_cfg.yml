@@ -5,7 +5,7 @@
       src: "{{ item }}"
       dest: "{{ docker_src }}/{{ item | basename | regex_replace('\\.j2','') }}"
     with_fileglob:
-        - ../templates/orchestration/docker-compose.json.j2
+        - ../templates/orchestration/docker-compose.yml.j2
 
   tags:
     - integration_test
