@@ -1,2 +1,7 @@
 ---
-
+- block:
+  - debug:
+      msg: do integration tests
+  tags:
+    - integration_test
+    - all_tests

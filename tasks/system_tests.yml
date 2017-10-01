@@ -1,4 +1,7 @@
 ---
- - include: pull_roles.yml
- - include: generate_app_cfg.yml
- - include: generate_orchestration_cfg.yml
+- block:
+  - debug:
+      msg: do system tests
+  tags:
+    - system_test
+    - all_tests

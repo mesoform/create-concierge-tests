@@ -1,9 +1,7 @@
 ---
 - include: system_tests.yml
-    tags:
-      - system_test
-      - build
+
+- include: generate_orchestration_cfg.yml
+
 - include: integration_tests.yml
-    tags:
-      - system_test
-      - build
+
