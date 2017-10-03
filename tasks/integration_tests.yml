@@ -3,5 +3,5 @@
   - debug:
       msg: do integration tests
   tags:
-    - integration_test
+    - integration_tests
     - all_tests
