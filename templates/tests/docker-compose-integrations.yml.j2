@@ -1,0 +1,22 @@
+
+## This is a compose file to define any integrations for our application. It is concatenated with the main docker-compose.yml file
+## already created for our application. See tasks/start_orchestration.yml
+
+
+version: '2'
+
+#services:
+#  db:
+#    image: DB-IMAGE:VER
+#    domainname: "{{ dns_domain }}"
+#    mem_limit: {{ resources }}
+#    env_file:
+#      - _env
+#    network_mode: {{ net_mode }}
+#    command: > START_DB
+#{% if ports is defined %}
+#    ports:
+#{% for port in ports %}
+#      - {{ port }}
+#{% endfor %}
+#{% endif %}

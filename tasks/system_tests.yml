@@ -2,6 +2,11 @@
 - block:
   - debug:
       msg: do system tests
+# We should assert that everything has worked
+#  - assert:
+#    that:
+#      - "worker.spark-worker.state.running"
+#      - "master.spark-master.state.running"
   tags:
     - system_test
     - all_tests

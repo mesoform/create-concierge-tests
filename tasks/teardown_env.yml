@@ -1,16 +1,11 @@
 ---
-- name: tearing down and removing {{ project_src }} for {{ app_name }}
+- name: running integration tests for {{ project_name }} project
   docker_service:
-    tls_hostname: "{{ docker_host }}"
-    definition:
-      app:
-        container_name: "{{ app_name }}"
-
-      db:
-        container_name: ""{{ app_name }}_db"
-        labels:
-          com.joyent.package: "{{ db_resources }}"
+#    tls_hostname: "{{ docker_host }}"
+    tls_verify: yes
+    remove_volumes: yes
     state: absent
-    timeout: 120
-
-...
+    files: docker-compose-integrated.yml
+    project_name: "{{ project_name }}"
+  tags:
+    - integration_tests

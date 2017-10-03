@@ -1,25 +1,14 @@
 ---
-# this is going to need a Jinja template setting up for the applications PHP config.php file because it will need to store the DB
-# password securely in a vault file
 
-# will also need to find a way to have persistent storage for the database. Maybe having a slave for failover is the best option 
-
-- name: running Docker Compose orchestration for {{ project_name }} project
-  docker_container:
+- name: running integration tests for {{ project_name }} project
+  docker_service:
 #    tls_hostname: "{{ docker_host }}"
     tls_verify: yes
-    name: "{{ project_name }}"
-    image: "{{ img_name }}:{{ img_ver }}"
 #    remove_volumes: no
-    state: started
+    state: present
+    files:
+      - docker-compose-integrations.yml
+      - docker-compose.yml
+    project_name: "{{ project_name }}"
   tags:
-    - build_and_run
-    - run_only
-
-# We should assert that everything has worked
-#- assert:
-#        that:
-#          - "worker.spark-worker.state.running"
-#          - "master.spark-master.state.running"
-
-...
+    - integration_tests

@@ -1,3 +1,4 @@
 ---
   resources: 128m
   net_mode: bridge
+  project_src: "{{ docker_src }}"
