@@ -8,5 +8,5 @@
 #      - "worker.spark-worker.state.running"
 #      - "master.spark-master.state.running"
   tags:
-    - system_test
+    - system_tests
     - all_tests
