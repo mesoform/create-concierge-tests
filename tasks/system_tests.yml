@@ -1,7 +1,7 @@
 ---
 - block:
   - debug:
-      msg: THIS IS A TEST TO CONFIRM THAT SUBMODULE UPDATE WORKS WITH AN UPSTREAM CHANGE AND GIT STASH CONDITION ALSO WORKS
+      msg: CONFIRM WHETHER WE NEED TO CAUSE ANSIBLE TO FAIL TO RERUN WITH UPDATES
 # We should assert that everything has worked
 #  - assert:
 #    that:
