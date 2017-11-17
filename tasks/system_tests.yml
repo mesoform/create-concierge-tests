@@ -1,7 +1,7 @@
 ---
 - block:
   - debug:
-      msg: do system tests
+      msg: THIS IS A TEST TO CONFIRM THAT SUBMODULE UPDATE WORKS
 # We should assert that everything has worked
 #  - assert:
 #    that:
