@@ -2,7 +2,7 @@
 
 Generally this role should be wrapped by a [top level playbook for generating application config](https://github.com/mesoform/configure-concierge-app) to be built into the image.
 
-If ran manually, there is a `concierge-image.yml` file which can be passed to `ansible-playbook` but many of the required variables and files will need to be set up locally.
+If ran manually, there is a `concierge-app.yml` file which can be passed to `ansible-playbook` but many of the required variables and files will need to be set up locally.
 
 Primarily the role simply runs tests against your container.
 
