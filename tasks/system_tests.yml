@@ -1,7 +1,7 @@
 ---
 - block:
   - debug:
-      msg: CONFIRM WHETHER WE NEED TO CAUSE ANSIBLE TO FAIL TO RERUN WITH UPDATES.
+      msg: PUT SOME TEST MESSAGE HERE
 # We should assert that everything has worked
 #  - assert:
 #    that:
