@@ -9,7 +9,7 @@ version: '2'
 #  db:
 #    image: DB-IMAGE:VER
 #    domainname: "{{ dns_domain }}"
-#    mem_limit: {{ memory }}
+#    mem_limit: {{ memory | default(default_memory) }}
 #    env_file:
 #      - _env
 #    network_mode: {{ net_mode }}
