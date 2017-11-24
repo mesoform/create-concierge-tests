@@ -12,7 +12,7 @@ version: '2'
 #    mem_limit: {{ memory | default(default_memory) }}
 #    env_file:
 #      - _env
-#    network_mode: {{ net_mode }}
+#    network_mode: {{ net_mode | default(default_net_mode) }}
 #    command: > START_DB
 #{% if ports is defined %}
 #    ports:
