@@ -11,6 +11,9 @@ services:
     domainname: "consul.{{ oaas_domain | default(default_oaas_domain) }}"
     restart: always
     mem_limit: "{{ consul_resources | default(default_consul_resources) }}"
+{% if network_mode is defined %}
+    network_mode: {{ network_mode | default(default_network_mode) }}
+{% endif %}
     ports:
       - 3128
       - 8301/udp
