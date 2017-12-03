@@ -38,6 +38,9 @@ services:
     environment:
       - CONSUL={{ svc_discovery }}
       - SVC_DISCOVERY={{ svc_discovery }}:8301
+{% if event_management is defined %}
+      - ZABBIX_SERVER={{ event_management }}
+{% endif %}
     command: >
       /usr/local/bin/consul agent -server
         -bootstrap-expect 1
