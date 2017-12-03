@@ -8,8 +8,7 @@ services:
 {% if svc_discovery is defined %}
   consul:
     image: "{{ consul_img | default(default_consul_img) }}"
-    domainname: "{{ oaas_domain | default(default_oaas_domain) }}"
-    hostname: "{{ svc_discovery | default(consul) }}"
+    domainname: "{{ svc_discovery | default(default_svc_discovery) }}.{{ oaas_domain | default(default_oaas_domain) }}"
     dns_search: "{{ dns_domain }} {{ oaas_domain }}"
     labels:
       - triton.cns.services=consul
