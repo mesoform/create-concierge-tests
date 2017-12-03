@@ -8,7 +8,11 @@ services:
 {% if svc_discovery is defined %}
   consul:
     image: "{{ consul_img | default(default_consul_img) }}"
-    domainname: "consul.{{ oaas_domain | default(default_oaas_domain) }}"
+    domainname: "{{ oaas_domain | default(default_oaas_domain) }}"
+    hostname: "{{ svc_discovery | default(consul) }}"
+    dns_search: "{{ dns_domain }} {{ oaas_domain }}"
+    labels:
+      - triton.cns.services=consul
     restart: always
     mem_limit: "{{ consul_resources | default(default_consul_resources) }}"
 {% if network_mode is defined %}
