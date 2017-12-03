@@ -36,7 +36,7 @@ services:
     dns: {{ dns }}
 {% endif %}
     environment:
-      - CONSUL={{ svc_discovery }}
+      - SVC_DISCOVERY={{ svc_discovery }}:8301
     command: >
       /usr/local/bin/consul agent -server
         -bootstrap-expect 1
