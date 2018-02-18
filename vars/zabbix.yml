@@ -35,7 +35,7 @@ get_group_id:
 
 get_autoreg_action:
   jsonrpc: "2.0"
-  method": "action.create"
+  method: "action.create"
   params:
     name: "{{ project_name }} auto-registration action"
     eventsource: 2
@@ -56,13 +56,13 @@ get_autoreg_action:
           formulaid: "B"
       operations:
         - optemplate:
-            - templateid: "{{ application_template_id }}"
+            - templateid: "{{ application_template_id_response.result.teplateid }}"
           operationtype: 6
           esc_step_from: 1
           esc_period: "0s"
           esc_step_to: 1
         - opgroup:
-            - groupid: "{{ application_group_id }}"
+            - groupid: "{{ application_group_id_response.result.groupid }}"
           operationtype: 4
           esc_step_from: 1
           esc_period: "0s"
