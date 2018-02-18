@@ -1,0 +1,74 @@
+---
+monitoring_template: "app-apache"
+monitoring_hostgroup: "{{ project_name }}"
+
+zabbix_api_auth:
+  jsonrpc: "2.0"
+  method: "user.login"
+  params:
+    user: "{{ zbx_user | default(default_zbx_user) }}"
+    password: "{{ zbx_pass | default(default_zbx_pass) }}"
+  id: 1
+  auth: null
+
+get_template_id:
+  jsonrpc: "2.0"
+  method: "template.get"
+  params:
+    output:
+      - "templateid"
+    filter:
+      host: "{{ monitoring_template }}"
+  auth: "{{ zabbix_auth_token.result }}"
+  id: 1
+
+get_group_id:
+  jsonrpc: "2.0"
+  method: "hostgroup.get"
+  params:
+    output:
+      - "groupid"
+    filter:
+      host: "{{ monitoring_hostgroup }}"
+  auth: "{{ zabbix_auth_token.result }}"
+  id: 1
+
+get_autoreg_action:
+  jsonrpc: "2.0"
+  method": "action.create"
+  params:
+    name: "{{ project_name }} auto-registration action"
+    eventsource: 2
+    status: 0
+    esc_period: "0s"
+    def_shortdata: "Auto registration{{':'}} {HOST.HOST}"
+    def_longdata: "Host name{{':'}} {HOST.HOST}\r\nHost IP{{':'}} {HOST.IP}\r\nAgent port{{':'}} {HOST.PORT}"
+    filter:
+      evaltype: 2
+      conditions:
+        - conditiontype: 24
+          value: "{{ dns_domain | default(project_name) }}"
+          operator: 2
+          formulaid: "A"
+        - conditiontype: 22
+          value: "{{ dns_domain | default(project_name) }}"
+          operator: 2
+          formulaid: "B"
+      operations:
+        - optemplate:
+            - templateid: "{{ application_template_id }}"
+          operationtype: 6
+          esc_step_from: 1
+          esc_period: "0s"
+          esc_step_to: 1
+        - opgroup:
+            - groupid: "{{ application_group_id }}"
+          operationtype: 4
+          esc_step_from: 1
+          esc_period: "0s"
+          esc_step_to: 1
+        - opinventory:
+            - inventory_mode: 1
+          operationtype: 10
+  auth: "{{ zabbix_auth_token.result }}"
+  id: 1

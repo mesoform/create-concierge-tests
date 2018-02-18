@@ -1,7 +1,23 @@
 ---
 - block:
-  - debug:
-      msg: do integration tests
+  - name: Include Zabbix variables
+    include_vars: zabbix.yml
+
+  - name: get Zabbix auth token
+      url:
+    register: zabbix_auth_token_response
+
+  - name: get template ID
+      url:
+    register: application_template_id_response
+
+  - name: get hostgroup ID
+      url:
+    register: application_group_id_response
+
+  when:
+    - event_management is defined
+    - event_management == 'zabbix'
   tags:
     - integration_tests
     - all_tests

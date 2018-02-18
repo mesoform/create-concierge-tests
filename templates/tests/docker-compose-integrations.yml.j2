@@ -8,7 +8,7 @@ services:
 {% if svc_discovery is defined %}
   consul:
     image: "{{ consul_img | default(default_consul_img) }}"
-    domainname: "{{ svc_discovery | default(default_svc_discovery) }}.{{ dns_domain | default(default_oaas_domain) }}"
+    domainname: "{{ svc_discovery | default(default_svc_discovery) }}.{{ oaas_domain | default(default_oaas_domain) }}"
     dns_search:
       - {{ dns_domain }}
       - {{ oaas_domain }}
@@ -23,6 +23,7 @@ services:
     ## sends network_mode=default by default. The uncommenting of this line is handled
     ## in the Ansible code but can obviously be uncommented personally for manual interaction
     # network_mode: bridge
+    # env_file: _env
 {% endif %}
     ports:
       - 8301/udp
@@ -46,4 +47,119 @@ services:
         -bootstrap-expect 1
         -config-dir=/etc/consul
         -ui-dir /ui
+{% endif %}
+
+{% if event_management is defined %}
+  mysql:
+    image: "{{ mysql_img | default(default_mysql_img) }}"
+    domainname: "mysql.{{ oaas_domain | default(default_oaas_domain) }}"
+    dns_search:
+      - {{ dns_domain }}
+      - {{ oaas_domain }}
+    labels:
+      - triton.cns.services=mysql
+    restart: always
+    mem_limit: "{{ mysql_resources | default(default_mysql_resources) }}"
+{% if network_mode is defined %}
+    network_mode: {{ network_mode | default(default_network_mode) }}
+{% else %}
+    ## For Triton bridge mode needs explicitly setting because the docker compose client
+    ## sends network_mode=default by default. The uncommenting of this line is handled
+    ## in the Ansible code but can obviously be uncommented personally for manual interaction
+    # network_mode: bridge
+    # env_file: _env
+{% endif %}
+    depends_on:
+      - consul
+    links:
+      - consul
+    expose:
+      - '3306'
+    environment:
+      - CONSUL_AGENT=1
+      - LOG_LEVEL=DEBUG
+      - SERVICE_NAME=mysql
+      - CONSUL=consul
+      - EM_SERVER=zbxserver
+
+  zbxserver:
+    image: "{{ zabbix_img | default(default_zbx_server_img) }}"
+    domainname: "zabbix-server.{{ oaas_domain | default(default_oaas_domain) }}"
+    dns_search:
+      - {{ dns_domain }}
+      - {{ oaas_domain }}
+    labels:
+      - triton.cns.services=zbxserver
+    restart: always
+    mem_limit: "{{ zbx_server_resources | default(default_zbx_server_resources) }}"
+{% if network_mode is defined %}
+    network_mode: {{ network_mode | default(default_network_mode) }}
+{% else %}
+    ## For Triton bridge mode needs explicitly setting because the docker compose client
+    ## sends network_mode=default by default. The uncommenting of this line is handled
+    ## in the Ansible code but can obviously be uncommented personally for manual interaction
+    # network_mode: bridge
+    # env_file: _env
+{% endif %}
+    depends_on:
+      - consul
+      - mysql
+    links:
+      - consul
+      - mysql
+    ports:
+      - 10051
+      - 10051/tcp
+    environment:
+      DB_SERVER_HOST: "mysql"
+      MYSQL_DATABASE: "zabbix"
+      MYSQL_USER: "{{ zabbix_user | default(default_zabbix_user) }}"
+      MYSQL_PASSWORD: "{{ zabbix_pass | default(default_zabbix_pass) }}"
+      EM_SERVER: "zbxserver"
+      ZBX_USER: "{{ zabbix_user | default(default_zabbix_user) }}"
+      ZBX_PASS: "{{ zabbix_pass | default(default_zabbix_pass) }}"
+      ZBX_API_HOST: "zbxweb"
+      ZBX_CONFIG_DIR: "/usr/lib/zabbix/app_config"
+      ZBX_DEBUGLEVEL: "4"
+      ZBX_CACHESIZE: "64M"
+
+  zbxweb:
+    image: "{{ zabbix_web_img | default(default_zbx_web_img) }}"
+    domainname: "zabbix-web.{{ oaas_domain | default(default_oaas_domain) }}"
+    dns_search:
+      - {{ dns_domain }}
+      - {{ oaas_domain }}
+    labels:
+      - triton.cns.services=zbxweb
+    restart: always
+    mem_limit: "{{ zbx_web_resources | default(default_zbx_web_resources) }}"
+{% if network_mode is defined %}
+    network_mode: {{ network_mode | default(default_network_mode) }}
+{% else %}
+    ## For Triton bridge mode needs explicitly setting because the docker compose client
+    ## sends network_mode=default by default. The uncommenting of this line is handled
+    ## in the Ansible code but can obviously be uncommented personally for manual interaction
+    # network_mode: bridge
+    # env_file: _env
+{% endif %}
+    depends_on:
+      - consul
+      - mysql
+      - zbxserver
+    links:
+      - consul
+      - mysql
+      - zbxserver
+    ports:
+      - 80
+      - 443
+    environment:
+      ZBX_SERVER_HOST: "zbxserver"
+      ZBX_SERVER_NAME: "zabbix-mesoform"
+      EM_SERVER: "zbxserver"
+      DB_SERVER_HOST: "mysql"
+      MYSQL_DATABASE: "zabbix"
+      MYSQL_USER: "{{ zabbix_user | default(default_zabbix_user) }}"
+      MYSQL_PASSWORD: "{{ zabbix_pass | default(default_zabbix_pass) }}"
+      TZ: "UTC"
 {% endif %}

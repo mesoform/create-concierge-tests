@@ -1,5 +1,13 @@
 ---
 default_svc_discovery: consul
-default_consul_resources: 128m
-default_consul_img: mesoform/concierge-consul:devtest
 default_oaas_domain: svc.mesoform.com
+default_consul_img: mesoform/concierge-consul:devtest
+default_mysql_img: mesoform/concierge-mysql:devtest
+default_zbx_server_img: mesoform/concierge-zabbix:devtest
+default_zbx_web_img: mesoform/concierge-zabbix-web:devtest
+default_consul_resources: 128m
+default_mysql_resources: 512m
+default_zbx_server_resources: 128m
+default_zbx_web_resources: 256m
+default_zbx_user: Admin
+default_zbx_pass: zabbix
