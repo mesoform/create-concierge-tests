@@ -5,7 +5,7 @@
 
 version: '2.1'
 services:
-{% if svc_discovery is defined %}
+{% if svc_discovery == 'consul' and svc_discovery_server is not defined %}
   consul:
     image: "{{ consul_img | default(default_consul_img) }}"
     domainname: "{{ svc_discovery | default(default_svc_discovery) }}.{{ oaas_domain | default(default_oaas_domain) }}"
@@ -37,10 +37,9 @@ services:
     dns: {{ dns }}
 {% endif %}
     environment:
-      - CONSUL={{ svc_discovery }}
-      - SVC_DISCOVERY={{ svc_discovery }}:8301
+      - SVC_DISCOVERY={{ svc_discovery_server | default(svc_discovery) }}:8301
 {% if event_management is defined %}
-      - EM_SERVER={{ event_management }}
+      - EM_SERVER={{ event_management_server | default(event_management) }}
 {% endif %}
     command: >
       /usr/local/bin/consul agent -server
@@ -49,7 +48,7 @@ services:
         -ui-dir /ui
 {% endif %}
 
-{% if event_management is defined %}
+{% if event_management == 'zabbix' and event_management_server is not defined %}
   mysql:
     image: "{{ mysql_img | default(default_mysql_img) }}"
     domainname: "mysql.{{ oaas_domain | default(default_oaas_domain) }}"
@@ -75,16 +74,16 @@ services:
       - consul
     expose:
       - '3306'
-    environment:
-      - CONSUL_AGENT=1
-      - LOG_LEVEL=DEBUG
+        environment:
+      - SVC_DISCOVERY={{ svc_discovery_server | default(svc_discovery + ':8301') }}
+{% if event_management is defined %}
+      - EM_SERVER={{ event_management_server | default(event_management) }}
+{% endif %}
       - SERVICE_NAME=mysql
-      - CONSUL=consul
-      - EM_SERVER=zbxserver
 
-  zbxserver:
+  {{ event_management }}:
     image: "{{ zabbix_img | default(default_zbx_server_img) }}"
-    domainname: "zabbix-server.{{ oaas_domain | default(default_oaas_domain) }}"
+    domainname: "{{ event_management }}.{{ oaas_domain | default(default_oaas_domain) }}"
     dns_search:
       - {{ dns_domain }}
       - {{ oaas_domain }}
@@ -111,21 +110,24 @@ services:
       - 10051
       - 10051/tcp
     environment:
+      - SVC_DISCOVERY={{ svc_discovery_server | default(svc_discovery + ':8301') }}
+{% if event_management is defined %}
+      - EM_SERVER={{ event_management_server | default(event_management) }}
+{% endif %}
       DB_SERVER_HOST: "mysql"
-      MYSQL_DATABASE: "zabbix"
+      MYSQL_DATABASE: "{{ event_management }}"
       MYSQL_USER: "{{ zabbix_user | default(default_zabbix_user) }}"
       MYSQL_PASSWORD: "{{ zabbix_pass | default(default_zabbix_pass) }}"
-      EM_SERVER: "zbxserver"
       ZBX_USER: "{{ zabbix_user | default(default_zabbix_user) }}"
       ZBX_PASS: "{{ zabbix_pass | default(default_zabbix_pass) }}"
-      ZBX_API_HOST: "zbxweb"
-      ZBX_CONFIG_DIR: "/usr/lib/zabbix/app_config"
+      ZBX_API_HOST: "{{ event_management_api | default(event_management + 'web') }}"
+      ZBX_CONFIG_DIR: "/usr/lib/{{ event_management }}/app_config"
       ZBX_DEBUGLEVEL: "4"
       ZBX_CACHESIZE: "64M"
 
-  zbxweb:
+  {{ event_management + 'web'}}:
     image: "{{ zabbix_web_img | default(default_zbx_web_img) }}"
-    domainname: "zabbix-web.{{ oaas_domain | default(default_oaas_domain) }}"
+    domainname: "{{ event_management + 'web'}}.{{ oaas_domain | default(default_oaas_domain) }}"
     dns_search:
       - {{ dns_domain }}
       - {{ oaas_domain }}
@@ -145,20 +147,24 @@ services:
     depends_on:
       - consul
       - mysql
-      - zbxserver
+      - {{ event_management }}
     links:
       - consul
       - mysql
-      - zbxserver
+      - {{ event_management }}
     ports:
       - 80
       - 443
     environment:
-      ZBX_SERVER_HOST: "zbxserver"
-      ZBX_SERVER_NAME: "zabbix-mesoform"
-      EM_SERVER: "zbxserver"
+      - CONSUL={{ svc_discovery_server | default(svc_discovery) }}
+      - SVC_DISCOVERY={{ svc_discovery_server | default(svc_discovery + ':8301') }}
+{% if event_management is defined %}
+      - EM_SERVER={{ event_management_server | default(event_management) }}
+{% endif %}
+      ZBX_SERVER_HOST: "{{ event_management }}"
+      ZBX_SERVER_NAME: "{{ event_management }}-mesoform"
       DB_SERVER_HOST: "mysql"
-      MYSQL_DATABASE: "zabbix"
+      MYSQL_DATABASE: "{{ event_management }}"
       MYSQL_USER: "{{ zabbix_user | default(default_zabbix_user) }}"
       MYSQL_PASSWORD: "{{ zabbix_pass | default(default_zabbix_pass) }}"
       TZ: "UTC"

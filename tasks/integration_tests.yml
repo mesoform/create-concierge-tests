@@ -4,7 +4,7 @@
     include_vars: zabbix.yml
 
   - name: get Zabbix auth token
-      url:
+      url: http://{{ event_management_api | default(event_management + 'web') }}/json_rpc.html
     register: zabbix_auth_token_response
 
   - name: get template ID

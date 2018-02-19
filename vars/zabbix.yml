@@ -2,6 +2,7 @@
 monitoring_template: "app-apache"
 monitoring_hostgroup: "{{ project_name }}"
 
+
 zabbix_api_auth:
   jsonrpc: "2.0"
   method: "user.login"
