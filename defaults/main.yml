@@ -1,5 +1,5 @@
 ---
 default_svc_discovery: consul
 default_consul_resources: 128m
-default_consul_img: mesoform/concierge-consul:devtest
+default_consul_img: mesoform/concierge-consul:latest
 default_oaas_domain: svc.mesoform.com
