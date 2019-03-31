@@ -11,8 +11,8 @@ services:
     dns_search:
       - {{ dns_domain }}
       - {{ oaas_domain }}
-    labels:
 {% if labels is defined %}
+    labels:
 {%   for label in labels %}
       - {{ label }}
 {%   endfor %}
