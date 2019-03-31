@@ -13,9 +13,9 @@ services:
       - {{ oaas_domain }}
     labels:
 {% if labels is defined %}
-{% for label in labels %}
+{%   for label in labels %}
       - {{ label }}
-{% endfor %}
+{%   endfor %}
 {% endif %}
     restart: {{ restart | default(default_container_restarts) }}
     mem_limit: {{ memory | default(default_memory) }}
@@ -49,5 +49,11 @@ services:
       - {{ env }}
 {% endfor %}
 {% endif %}
-    ## uncomment to test your application start without containerpilot
-    #entrypoint: {{ command }}
+{% if entrypoint is defined %}
+entrypoint: {{ entrypoint }}
+{%   if command is defined %}
+command: {{ command }}
+{%   endif %}
+{% else %}
+entrypoint: {{ command }}
+{% endif %}
