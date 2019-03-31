@@ -1,0 +1,53 @@
+# services is a version 2 only feature
+# Container Orchestration for a Concierge Managed Application
+# http://www.mesoform.com/blog-listing/info/the-concierge-paradigm
+
+version: '2.1'
+
+services:
+  {{ project_name }}:
+    image: "{{ img_name }}"
+    domainname: "{{ dns_domain }}"
+    dns_search:
+      - {{ dns_domain }}
+      - {{ oaas_domain }}
+    labels:
+{% if labels is defined %}
+{% for label in labels %}
+      - {{ label }}
+{% endfor %}
+{% endif %}
+    restart: {{ restart | default(default_container_restarts) }}
+    mem_limit: {{ memory | default(default_memory) }}
+{% if network_mode is defined %}
+    network_mode: {{ network_mode | default(default_network_mode) }}
+{% else %}
+    ## For Triton bridge mode needs explicitly setting because the docker compose client
+    ## sends network_mode=default by default. The uncommenting of this line is handled
+    ## in the Ansible code but can obviously be uncommented personally for manual interaction
+    # network_mode: bridge
+    # Triton also doesn't handle domain_name, so we fix this by adding a
+    # DNS_DOMAIN={{ dns_domain }} environment variable below
+{% endif %}
+{% if dns is defined %}
+    dns: {{ dns }}
+{% endif %}
+{% if ports is defined or service_port is defined %}
+    ports:
+{% if service_port is defined %}
+      - {{ service_port | lower }}
+{% endif %}
+{% if ports is defined %}
+{% for port in ports %}
+      - {{ port | lower }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% if env_vars is defined %}
+    environment:
+{% for env in env_vars %}
+      - {{ env }}
+{% endfor %}
+{% endif %}
+    ## uncomment to test your application start without containerpilot
+    #entrypoint: {{ command }}
