@@ -49,11 +49,8 @@ services:
       - {{ env }}
 {% endfor %}
 {% endif %}
-{% if entrypoint is defined %}
-entrypoint: {{ entrypoint }}
-{%   if command is defined %}
-command: {{ command }}
-{%   endif %}
+{% if test_script is defined %}
+    entrypoint: {{ test_script }}
 {% else %}
-entrypoint: {{ command }}
+    entrypoint: {{ command }}
 {% endif %}
