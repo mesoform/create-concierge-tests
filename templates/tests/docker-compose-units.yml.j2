@@ -6,7 +6,7 @@ version: '2.1'
 
 services:
   {{ project_name }}:
-    image: "{{ img_name }}"
+    image: "{{ img_name | default(default_img_name) }}"
     domainname: "{{ dns_domain }}"
     dns_search:
       - {{ dns_domain }}
